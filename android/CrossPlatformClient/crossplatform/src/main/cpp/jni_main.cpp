@@ -3,28 +3,29 @@
 //
 #include <jni.h>
 #include <android/log.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "jni_utils.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-JNIEXPORT jlong JNICALL
+JNIEXPORT jint JNICALL
 Java_com_client_crossplatform_FileReader_nativeOpen
         (JNIEnv *env, jobject thiz, jstring jpath) {
     auto path = convertJStringToString(env, jpath);
-    FILE* file = fopen(path->c_str(), "r");
+    int fd = open(path->c_str(), O_RDONLY);
     CHECK_RETURN_NULL(path);
-    return reinterpret_cast<jlong>(file);
+    return fd;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_client_crossplatform_FileReader_nativeRead
-        (JNIEnv *env, jobject thiz, jlong ptr, jbyteArray jbuffer, jint size) {
-    FILE* file = reinterpret_cast<FILE*>(ptr);
-    CHECK_RETURN_NULL(file)
+        (JNIEnv *env, jobject thiz, jint fd, jbyteArray jbuffer, jint size) {
+    CHECK_RETURN_NULL(fd)
     char* buffer = new char[size];
-    auto realSize = fread(buffer, size, size, file);
+    auto realSize = read(fd, buffer, size);
     if (realSize > 0) {
         env->SetByteArrayRegion(jbuffer, 0, realSize, (const jbyte*)buffer);
     }
@@ -34,10 +35,9 @@ Java_com_client_crossplatform_FileReader_nativeRead
 
 JNIEXPORT void JNICALL
 Java_com_client_crossplatform_FileReader_nativeClose
-    (JNIEnv *env, jobject thiz, jlong ptr) {
-    FILE* file = reinterpret_cast<FILE*>(ptr);
-    CHECK_RETURN(file)
-    fclose(file);
+    (JNIEnv *env, jobject thiz, jint fd) {
+    CHECK_RETURN(fd)
+    close(fd);
 }
 
 #ifdef __cplusplus

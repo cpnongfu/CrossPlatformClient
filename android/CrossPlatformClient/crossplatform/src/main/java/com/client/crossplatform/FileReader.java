@@ -10,7 +10,7 @@ public class FileReader {
         System.loadLibrary("clientdemo");
     }
     private String mFilePath;
-    private long mPtr;
+    private int mFd;
     public FileReader(@NonNull String path) throws IOException {
         File file = new File(path);
         if (!file.exists()) {
@@ -23,19 +23,20 @@ public class FileReader {
             throw new IOException("No permission to read " + path);
         }
         mFilePath = path;
-        mPtr = nativeOpen(path);
+        mFd = nativeOpen(path);
     }
 
     public void close() throws IOException {
-        nativeClose(mPtr);
+        nativeClose(mFd);
     }
 
-    public int read(byte[] buffer, int size) throws IOException {
-        int realSize = nativeRead(mPtr, buffer, size);
+    public int read(@NonNull byte[] buffer, int size) throws IOException {
+        int realSize = nativeRead(mFd, buffer, size);
+        if (realSize == 0) return -1;
         return realSize;
     }
 
-    private native long nativeOpen(@NonNull String path);
-    private native int nativeRead(long ptr, byte[] buffer, int size);
-    private native void nativeClose(long ptr);
+    private native int nativeOpen(@NonNull String path);
+    private native int nativeRead(int fd, byte[] buffer, int size);
+    private native void nativeClose(int fd);
 }
