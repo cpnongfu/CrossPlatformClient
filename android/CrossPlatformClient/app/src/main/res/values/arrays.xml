@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="demo_item_names">
+        <item>@string/title_activity_simple_file_read</item>
+    </string-array>
+    <string-array name="demo_item_activities">
+        <item>SimpleFileReadActivity</item>
+    </string-array>
+</resources>
