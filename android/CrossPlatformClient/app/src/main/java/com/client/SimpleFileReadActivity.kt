@@ -9,6 +9,10 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.client.crossplatform.FileReader
+import java.io.File
+import java.lang.ref.WeakReference
+import kotlin.concurrent.thread
 
 class SimpleFileReadActivity : AppCompatActivity() {
     private val openFileBtn : View by lazy { findViewById<View>(R.id.open_file_btn) }
@@ -27,6 +31,9 @@ class SimpleFileReadActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_simple_file_read)
         openFileBtn.setOnClickListener { showFileChooser() }
+        val path = "/sdcard/1.txt"
+        Toast.makeText(this, "$path exist ? "  + File(path).exists() , Toast.LENGTH_LONG).show()
+
     }
 
     private fun showFileChooser() {
@@ -46,7 +53,30 @@ class SimpleFileReadActivity : AppCompatActivity() {
         if (requestCode == FILE_SELECT_CODE && resultCode == Activity.RESULT_OK ) {
             filePath = data?.data?.let { getPath(this, it) }
             Log.v(TAG, "onActivityResult: path = $filePath")
-            pathTv.text = filePath
+            filePath?.let {
+                pathTv.text = it
+                readFile(it)
+            }
+
+        }
+    }
+
+    private fun readFile(filePath: String) {
+        val weakContentTv = WeakReference(contentTv)
+        thread {
+            val reader = FileReader(filePath)
+            val buffSize = 1024
+            val buffer = ByteArray(buffSize)
+            var readSize: Int
+            val stringBuilder = StringBuilder()
+            while((reader.read(buffer, buffSize).also { readSize = it } != -1)) {
+                val segment = java.lang.String(buffer, 0, readSize)
+                stringBuilder.append(segment)
+            }
+            val view = weakContentTv.get()
+            view?.post {
+                contentTv.text = stringBuilder.toString()
+            }
         }
     }
 }
