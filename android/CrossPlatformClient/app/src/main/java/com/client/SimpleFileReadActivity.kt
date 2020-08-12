@@ -22,9 +22,6 @@ class SimpleFileReadActivity : AppCompatActivity() {
 
     companion object {
         private const val FILE_SELECT_CODE = 200
-        private const val FILE_PLAY_WITH_SYSTEM = 300
-        private const val FILE_PLAY_WITH_VIDEOVIEW = 400
-        private const val FILE_PLAY_WITH_SURFACEVIEW = 500
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +62,7 @@ class SimpleFileReadActivity : AppCompatActivity() {
         val weakContentTv = WeakReference(contentTv)
         thread {
             val reader = FileReader(filePath)
-            val buffSize = 1024
+            val buffSize = 2
             val buffer = ByteArray(buffSize)
             var readSize: Int
             val stringBuilder = StringBuilder()

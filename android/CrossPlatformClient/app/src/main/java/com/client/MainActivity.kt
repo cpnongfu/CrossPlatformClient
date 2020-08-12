@@ -12,25 +12,13 @@ import permissions.dispatcher.*
 
 @RuntimePermissions
 class MainActivity : AppCompatActivity() {
-  private val mListView: ListView by lazy { findViewById<ListView>(R.id.main_list) }
   private val adapter by lazy { ListViewAdapter(this, getListViewItems())}
   private var hasPermission = false
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
-//    mListView.adapter = ListViewAdapter(this, getListViewItems())
     Log.i("WJZ", externalCacheDir!!.absolutePath)
     findViewById<ListView>(R.id.main_list).adapter = adapter
-//    val reader = FileReader(externalCacheDir!!.absolutePath + "/1.txt")
-//    val buffSize = 1024
-//    var buffer = ByteArray(buffSize)
-//    var readSize = 0
-//    val stringBuilder = StringBuilder()
-//    while((reader.read(buffer, buffSize).also { readSize = it } != -1)) {
-//      val segment = java.lang.String(buffer, 0, readSize)
-//      stringBuilder.append(segment)
-//    }
-//    Log.i("WJZ", "Content $stringBuilder")
   }
 
 
